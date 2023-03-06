@@ -13,7 +13,17 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 
-function TasksTable({ tasksList, editBtnHandler, delBtnHandler, selectedRowNum }) {
+function TasksTable({
+  tasksList,
+  editBtnHandler,
+  delBtnHandler,
+  selectedRowNum
+}: {
+  tasksList: Array<{ id: number; value: string }>;
+  editBtnHandler: (row: number) => void;
+  delBtnHandler: (row: number) => void;
+  selectedRowNum: number;
+}) {
   return (
     <TableContainer>
       <Table stickyHeader>
@@ -37,11 +47,11 @@ function TasksTable({ tasksList, editBtnHandler, delBtnHandler, selectedRowNum }
           </TableRow>
         </TableHead>
         <TableBody>
-          {tasksList.map((task: { key: number; value: string }, index: number) => (
-            <TableRow key={index} hover selected={selectedRowNum === index}>
+          {tasksList.map((task) => (
+            <TableRow key={task.id} hover selected={selectedRowNum === task.id}>
               <TableCell variant="body">
                 <Typography variant="body2" textAlign="center">
-                  {task.key}
+                  {task.id}
                 </Typography>
               </TableCell>
               <TableCell variant="body">
@@ -50,7 +60,7 @@ function TasksTable({ tasksList, editBtnHandler, delBtnHandler, selectedRowNum }
                 </Typography>
               </TableCell>
               <TableCell>
-                <Buttons editBtnHandler={() => editBtnHandler(index)} delBtnHandler={() => delBtnHandler(index)} />
+                <Buttons editBtnHandler={() => editBtnHandler(task.id)} delBtnHandler={() => delBtnHandler(task.id)} />
               </TableCell>
             </TableRow>
           ))}
@@ -59,7 +69,13 @@ function TasksTable({ tasksList, editBtnHandler, delBtnHandler, selectedRowNum }
     </TableContainer>
   );
 }
-function Buttons({ editBtnHandler, delBtnHandler }) {
+function Buttons({
+  editBtnHandler,
+  delBtnHandler
+}: {
+  editBtnHandler: (row: number) => void;
+  delBtnHandler: (row: number) => void;
+}) {
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
       <Tooltip title="Edit">
@@ -76,7 +92,17 @@ function Buttons({ editBtnHandler, delBtnHandler }) {
   );
 }
 
-export default function ToDoList({ tasksList, editBtnHandler, delBtnHandler, selectedRowNum }) {
+export default function ToDoList({
+  tasksList,
+  editBtnHandler,
+  delBtnHandler,
+  selectedRowNum
+}: {
+  tasksList: Array<{ id: number; value: string }>;
+  editBtnHandler: (row: number) => void;
+  delBtnHandler: (row: number) => void;
+  selectedRowNum: number;
+}) {
   return (
     <Stack spacing={0} maxHeight="80vh">
       <Toolbar>

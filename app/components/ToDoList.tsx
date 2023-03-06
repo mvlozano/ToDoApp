@@ -1,6 +1,5 @@
 import Stack from '@mui/material/Stack';
 import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
@@ -12,90 +11,83 @@ import Delete from '@mui/icons-material/Delete';
 import Typography from '@mui/material/Typography';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { useContext } from 'react';
-import { TestContext } from '@/components/ToDoContainer';
 
-function TasksTable(props) {
-  const { tasksList, editBtnHandler, delBtnHandler } = props;
+function TasksTable({ tasksList, editBtnHandler, delBtnHandler, selectedRowNum }) {
   return (
-    <Table stickyHeader>
-      <TableHead>
-        <TableRow>
-          <TableCell align="left" variant={'head'} size={'small'}>
-            ID Tarea
-          </TableCell>
-          <TableCell align="left" variant={'head'}>
-            Descripción
-          </TableCell>
-          <TableCell align="right" variant={'head'}></TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {tasksList.map((task) => (
-          <TableRow key={task.key} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover>
-            <TableCell align="left" variant={'body'}>
-              <Typography variant={'body2'}>{task.key}</Typography>
-            </TableCell>
-            <TableCell align="left" variant={'body'}>
-              <Typography variant={'body2'} paragraph align={'center'}>
-                {task.task}
+    <TableContainer>
+      <Table stickyHeader>
+        <TableHead>
+          <TableRow>
+            <TableCell variant="head" size="small">
+              <Typography variant="subtitle1" textAlign="center">
+                Task ID
               </Typography>
             </TableCell>
-            <TableCell align="right" variant={'body'}>
-              <EditButtons editBtnHandler={editBtnHandler} delBtnHandler={delBtnHandler} />
+            <TableCell variant="head">
+              <Typography variant="subtitle1" textAlign="left">
+                Description
+              </Typography>
+            </TableCell>
+            <TableCell variant="head" size="small">
+              <Typography variant="subtitle1" textAlign="center">
+                Actions
+              </Typography>
             </TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {tasksList.map((task: { key: number; value: string }, index: number) => (
+            <TableRow key={index} hover selected={selectedRowNum === index}>
+              <TableCell variant="body">
+                <Typography variant="body2" textAlign="center">
+                  {task.key}
+                </Typography>
+              </TableCell>
+              <TableCell variant="body">
+                <Typography variant="body1" textAlign="left" paragraph margin={0}>
+                  {task.value}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Buttons editBtnHandler={() => editBtnHandler(index)} delBtnHandler={() => delBtnHandler(index)} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+function Buttons({ editBtnHandler, delBtnHandler }) {
+  return (
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Tooltip title="Edit">
+        <IconButton onClick={editBtnHandler}>
+          <Edit />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Delete">
+        <IconButton onClick={delBtnHandler}>
+          <Delete />
+        </IconButton>
+      </Tooltip>
+    </Box>
   );
 }
 
-function TasksToolBar(props) {
+export default function ToDoList({ tasksList, editBtnHandler, delBtnHandler, selectedRowNum }) {
   return (
-    <Toolbar>
-      <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-        Tareas Pendientes
-      </Typography>
-    </Toolbar>
-  );
-}
-
-function EditButtons(props) {
-  const { editBtnHandler } = props;
-  return (
-    <Grid container>
-      <Grid item>
-        <Tooltip title="Edit">
-          <IconButton onClick={editBtnHandler}>
-            <Edit />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-      <Grid item>
-        <Tooltip title="Delete">
-          <IconButton>
-            <Delete />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-    </Grid>
-  );
-}
-
-export default function ToDoList({ tasksList }) {
-  const ctx = useContext(TestContext);
-  return (
-    <Paper elevation={3}>
-      {/*<Typography variant="h1">{ctx.ok ? 'True' : 'False'}</Typography>*/}
-      <Stack spacing={0}>
-        <TasksToolBar />
-        <TableContainer sx={{ height: '500px' }}>
-          <TasksTable tasksList={tasksList} />
-        </TableContainer>
-      </Stack>
-    </Paper>
+    <Stack spacing={0} maxHeight="80vh">
+      <Toolbar>
+        <Typography variant="h6">Pending Tasks</Typography>
+      </Toolbar>
+      <TasksTable
+        tasksList={tasksList}
+        editBtnHandler={editBtnHandler}
+        delBtnHandler={delBtnHandler}
+        selectedRowNum={selectedRowNum}
+      />
+    </Stack>
   );
 }

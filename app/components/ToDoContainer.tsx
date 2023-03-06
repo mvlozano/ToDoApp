@@ -4,49 +4,80 @@ import Stack from '@mui/material/Stack';
 import ToDoForm from './ToDoForm';
 import ToDoList from './ToDoList';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-
-export const TestContext = createContext({ ok: false });
+import Paper from '@mui/material/Paper';
 
 export default function ToDoContainer() {
   const [task, setTask] = useState('');
-  const [tasksList, setTasksList] = useState([]);
-  const [addSaveBtn, setAddSaveBtn] = useState('add');
-  const [btnColor, setBtnColor] = useState('primary');
-  const [btnText, setBtnText] = useState('Añadir Tarea');
-  const [ok, setOk] = useState(false);
+  const [tasksList, setTasksList] = useState(
+    'Something,'
+      .repeat(10)
+      .split(',', 10)
+      .map((element, index) => ({ key: index, value: element + ` ${index}` }))
+  );
+  const [adding, setAdding] = useState(true);
+  const [selectedRowNum, setSelectedRowNum] = useState(-1);
   const addBtnHandler = () => {
-    if (task !== '') {
-      setTasksList((prevList) => {
-        return [...prevList, { key: prevList.length, task }];
-      });
-    }
-    console.log(tasksList);
+    setTasksList((prevList: { value: string; key: number }[]) => {
+      return [...prevList, { key: prevList.length, value: task }];
+    });
     setTask('');
   };
-  const saveBtnHandler = () => {};
-  const inputTextHandler = (event) => {
+  const saveBtnHandler = () => {
+    setTasksList((prevList: { value: string; key: number }[]) => {
+      const newTasksList = prevList.slice();
+      newTasksList[selectedRowNum].value = task;
+      return newTasksList;
+    });
+    setTask('');
+    setAdding(true);
+    setSelectedRowNum(-1);
+  };
+  const inputTxtHandler = (event: { target: { value: React.SetStateAction<string> } }) => {
     setTask(event.target.value);
   };
+
+  const editBtnHandler = (row: number) => {
+    setSelectedRowNum(row);
+    setTask(tasksList[row].value);
+    setAdding(false);
+  };
+  const delBtnHandler = (row: number) => {
+    setTasksList((prevList) => {
+      const leftHalf = prevList.slice(0, row);
+      const rightHalf = prevList.slice(row + 1);
+      return [...leftHalf, ...rightHalf.map((task, index) => ({ key: row + index, value: task.value }))];
+    });
+    if (selectedRowNum > row) {
+      setSelectedRowNum((prevNum) => --prevNum);
+    } else if (selectedRowNum === row) {
+      setTask('');
+      setAdding(true);
+      setSelectedRowNum(-1);
+    }
+  };
+
   return (
-    <TestContext.Provider value={{ ok }}>
-      <Grid container spacing={2} justifyContent={'center'} alignItems={'flex-start'}>
-        <Grid item xs={4}>
-          {/*<Button onClick={() => setOk(!ok)}>Add</Button>*/}
+    <Stack spacing={2} alignItems="center">
+      <Box width={{ md: '50%', sm: '75%', xs: '95%' }}>
+        <Paper elevation={3}>
           <ToDoForm
-            inputTextHandler={inputTextHandler}
+            inputTxtHandler={inputTxtHandler}
             task={task}
-            btnHandler={addSaveBtn === 'add' ? addBtnHandler : saveBtnHandler}
-            btnColor={btnColor}
-            btnText={btnText}
+            btnHandler={adding ? addBtnHandler : saveBtnHandler}
+            isBtnAdd={adding}
           />
-        </Grid>
-        <Grid item xs={6}>
-          <ToDoList tasksList={tasksList} />
-        </Grid>
-      </Grid>
-    </TestContext.Provider>
+        </Paper>
+      </Box>
+      <Box width={{ md: '50%', sm: '75%', xs: '95%' }}>
+        <Paper elevation={3}>
+          <ToDoList
+            tasksList={tasksList}
+            editBtnHandler={editBtnHandler}
+            delBtnHandler={delBtnHandler}
+            selectedRowNum={selectedRowNum}
+          />
+        </Paper>
+      </Box>
+    </Stack>
   );
 }

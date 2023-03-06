@@ -1,26 +1,25 @@
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 
-export default function ToDoForm(props) {
-  const { inputTextHandler, task, btnHandler, btnColor, btnText } = props;
+export default function ToDoForm({ inputTxtHandler, task, btnHandler, isBtnAdd }) {
+  const btnColor = isBtnAdd ? 'primary' : 'secondary';
+  const btnTxt = isBtnAdd ? 'Add Task' : 'Save';
+  const disabled = task.length === 0;
   return (
-    <Paper elevation={3}>
-      <Box>
-        <TextField
-          id="taskText"
-          label="Nueva Tarea"
-          variant="standard"
-          multiline
-          onChange={inputTextHandler}
-          value={task}
-          sx={{ width: '80%' }}
-        />
-        <Button variant="contained" onClick={btnHandler} color={btnColor}>
-          {btnText}
-        </Button>
-      </Box>
-    </Paper>
+    <Box display="flex" alignItems="center" justifyContent="space-evenly" flexWrap="wrap">
+      <TextField
+        id="taskText"
+        label="New Task"
+        variant="standard"
+        multiline
+        onChange={inputTxtHandler}
+        value={task}
+        sx={{ minWidth: '40%' }}
+      />
+      <Button variant="contained" onClick={btnHandler} color={btnColor} disabled={disabled}>
+        {btnTxt}
+      </Button>
+    </Box>
   );
 }

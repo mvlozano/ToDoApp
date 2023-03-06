@@ -15,6 +15,6 @@ const nextConfig = {
       preventFullImport: true
     }
   },
-  output: 'standalone',
+  output: 'standalone'
 };
 module.exports = nextConfig;
